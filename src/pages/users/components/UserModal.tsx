@@ -5,15 +5,19 @@ const UserModalIndex = props => {
   const [form] = Form.useForm();
   const { visible, record, handleCancel, handleOk, onFinish } = props;
   useEffect(() => {
-    form.setFieldsValue(record);
+    if (record) {
+      form.setFieldsValue(record);
+    } else {
+      form.resetFields();
+    }
   }, [visible]);
 
   const onOk = () => {
-    form.submit()
-  }
+    form.submit();
+  };
   const onFinishFailed = err => {
-    console.log(err)
-  }
+    console.log(err);
+  };
 
   return (
     <Modal
@@ -30,29 +34,17 @@ const UserModalIndex = props => {
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
       >
-        <Form.Item
-          label="Name"
-          name="name"
-        >
+        <Form.Item label="Name" name="name">
           <Input />
         </Form.Item>
 
-        <Form.Item
-          label="Email"
-          name="email"
-        >
+        <Form.Item label="Email" name="email">
           <Input />
         </Form.Item>
-        <Form.Item
-          label="Create Time"
-          name="create_time"
-        >
+        <Form.Item label="Create Time" name="create_time">
           <Input />
         </Form.Item>
-        <Form.Item
-          label="ID"
-          name="id"
-        >
+        <Form.Item label="ID" name="id">
           <Input />
         </Form.Item>
       </Form>

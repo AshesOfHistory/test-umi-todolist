@@ -1,5 +1,11 @@
 import { Reducer, Effect, Subscription } from 'umi';
-import { getRemoteList, editRecord, deleteRecord } from '@/pages/users/service';
+import {
+  getRemoteList,
+  editRecord,
+  deleteRecord,
+  addRecord,
+} from '@/pages/users/service';
+import { message } from 'antd';
 
 interface UserModelType {
   namespace: 'users';
@@ -30,22 +36,45 @@ const UserModel: UserModelType = {
     *getRemote(action, { put, call }) {
       // 无返回值 返回到页面的数据只能通过reducer来传递
       const data = yield call(getRemoteList);
-      yield put({
-        type: 'getList',
-        payload: data,
-      });
+      if (data) {
+        yield put({
+          type: 'getList',
+          payload: data,
+        });
+      }
     },
     *edit({ payload }, { put, call }) {
       const data = yield call(editRecord, payload);
-      yield put({
-        type: 'getRemote',
-      });
+      if (data) {
+        message.success('编辑成功');
+        yield put({
+          type: 'getRemote',
+        });
+      } else {
+        message.error('编辑失败');
+      }
     },
     *delete({ payload }, { put, call }) {
       const data = yield call(deleteRecord, payload);
-      yield put({
-        type: 'getRemote',
-      });
+      if (data) {
+        message.success('删除成功');
+        yield put({
+          type: 'getRemote',
+        });
+      } else {
+        message.error('删除失败');
+      }
+    },
+    *add({ payload }, { put, call }) {
+      const data = yield call(addRecord, payload.values);
+      if (data) {
+        message.success('新增成功');
+        yield put({
+          type: 'getRemote',
+        });
+      } else {
+        message.error('新增失败');
+      }
     },
   },
   subscriptions: {
