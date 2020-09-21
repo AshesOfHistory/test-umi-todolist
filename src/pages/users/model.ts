@@ -37,18 +37,14 @@ const UserModel: UserModelType = {
     },
     *edit({ payload }, { put, call }) {
       const data = yield call(editRecord, payload);
-      const remoteData = yield call(getRemoteList);
       yield put({
-        type: 'getList',
-        payload: remoteData,
+        type: 'getRemote',
       });
     },
     *delete({ payload }, { put, call }) {
       const data = yield call(deleteRecord, payload);
-      const remoteData = yield call(getRemoteList);
       yield put({
-        type: 'getList',
-        payload: remoteData,
+        type: 'getRemote',
       });
     },
   },
