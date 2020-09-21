@@ -3,7 +3,7 @@ import { Table, Popconfirm, Button } from 'antd';
 import UserModal from './components/UserModal';
 import { connect } from 'umi';
 
-const index = ({ users, dispatch }) => {
+const index = ({ users, dispatch, userListLoading }) => {
   // 接受到返回到users值
   const [modalVisible, setModalVisible] = useState(false);
   const [record, setRecord] = useState(undefined);
@@ -105,6 +105,7 @@ const index = ({ users, dispatch }) => {
         columns={columns}
         dataSource={users.length ? users : []}
         rowKey="id"
+        loading={userListLoading}
       />
       <UserModal
         visible={modalVisible}
@@ -120,7 +121,8 @@ const index = ({ users, dispatch }) => {
 // const mapUserStateToProps = ({ users }) => ({ // model namespace users
 //   users
 // })
-export default connect(({ users }) => ({
+export default connect(({ users, loading }) => ({
   // model namespace users
   users,
+  userListLoading: loading.models.users,
 }))(index); // 使用connect方式 将返回数据绑定到index函数组件中
