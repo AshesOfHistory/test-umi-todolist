@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { ApplyPluginsType } from '/Users/a1/Documents/test_projects/test-umi/test-umi-app/node_modules/@umijs/runtime';
+import { ApplyPluginsType } from 'G:/_DemoProject/test-umi-todolist/node_modules/@umijs/runtime';
 import { plugin } from './plugin';
 
 export function getRoutes() {
