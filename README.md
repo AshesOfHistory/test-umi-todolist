@@ -1,2 +1,15 @@
-# test-umi-todolist
-umijs练手项目，熟悉结构和语法
+# umi project
+
+## Getting Started
+
+Install dependencies,
+
+```bash
+$ yarn
+```
+
+Start the dev server,
+
+```bash
+$ yarn start
+```
