@@ -1,20 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, FC } from 'react';
 import { Table, Popconfirm, Button } from 'antd';
 import UserModal from './components/UserModal';
-import { connect } from 'umi';
+import { connect, Dispatch, Loading, UserState } from 'umi';
+import { SingleUserState, FormValues } from './data.d';
 
-const index = ({ users, dispatch, userListLoading }) => {
+interface UserPageProps {
+  users: UserState;
+  dispatch: Dispatch;
+  userListLoading: boolean;
+}
+
+const UserListPage: FC<UserPageProps> = ({
+  users,
+  dispatch,
+  userListLoading,
+}) => {
   // 接受到返回到users值
   const [modalVisible, setModalVisible] = useState(false);
-  const [record, setRecord] = useState(undefined);
-  const handleEdit = record => {
+  const [record, setRecord] = useState<SingleUserState | undefined>(undefined);
+  const handleEdit = (record: SingleUserState) => {
     setRecord(record);
     setModalVisible(true);
   };
   const closeModal = () => {
     setModalVisible(false);
   };
-  const onFinish = values => {
+  const onFinish = (values: FormValues) => {
     const id = record?.id;
     if (id) {
       dispatch({
@@ -35,13 +46,11 @@ const index = ({ users, dispatch, userListLoading }) => {
 
     setModalVisible(false);
   };
-  const onConfirmDelete = record => {
-    setRecord(record);
+  const onConfirmDelete = (id: number) => {
     dispatch({
       type: 'users/delete',
-      payload: record.id,
+      payload: id,
     });
-    setRecord(undefined);
   };
   const onAdd = () => {
     setRecord(undefined);
@@ -58,12 +67,12 @@ const index = ({ users, dispatch, userListLoading }) => {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: text => <a>{text}</a>,
+      render: (text: string) => <a>{text}</a>,
     },
     {
       title: 'Action',
       key: 'action',
-      render: (text, record) => (
+      render: (text: string, record: SingleUserState) => (
         <div>
           <Button
             style={{ marginRight: '10px' }}
@@ -77,7 +86,7 @@ const index = ({ users, dispatch, userListLoading }) => {
             placement="top"
             title="确认删除么？"
             onConfirm={() => {
-              onConfirmDelete(record);
+              onConfirmDelete(record.id);
             }}
             okText="确定"
             cancelText="取消"
@@ -103,14 +112,13 @@ const index = ({ users, dispatch, userListLoading }) => {
       </Button>
       <Table
         columns={columns}
-        dataSource={users.length ? users : []}
+        dataSource={users.data.length ? users.data : []}
         rowKey="id"
         loading={userListLoading}
       />
       <UserModal
         visible={modalVisible}
-        handleCancel={closeModal}
-        handleOk={closeModal}
+        handleClose={closeModal}
         onFinish={onFinish}
         record={record}
       ></UserModal>
@@ -121,8 +129,10 @@ const index = ({ users, dispatch, userListLoading }) => {
 // const mapUserStateToProps = ({ users }) => ({ // model namespace users
 //   users
 // })
-export default connect(({ users, loading }) => ({
-  // model namespace users
-  users,
-  userListLoading: loading.models.users,
-}))(index); // 使用connect方式 将返回数据绑定到index函数组件中
+export default connect(
+  ({ users, loading }: { users: UserState; loading: Loading }) => ({
+    // model namespace users
+    users,
+    userListLoading: loading.models.users,
+  }),
+)(UserListPage); // 使用connect方式 将返回数据绑定到index函数组件中

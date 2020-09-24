@@ -1,12 +1,29 @@
 import request, { extend } from 'umi-request';
 import { message } from 'antd';
+import { SingleUserState, FormValues } from './data';
 
-const errorHandler = function(error) {
+const errorHandler = function(error: any) {
   if (error.response) {
     // 请求已发送但服务端返回状态码非 2xx 的响应
-    console.log(error);
     if (error.response.status > 400) {
-      message.error(error.data.message ? error.data.message : error.data);
+      const getMsg = () => {
+        if (error.data) {
+          if (error.data.message) {
+            return error.data.message;
+          }
+          if (error.data.msg) {
+            return error.data.msg;
+          }
+          return '';
+        } else {
+          return '';
+        }
+      };
+      const msg = getMsg();
+      if (msg) {
+        message.error(msg);
+      }
+      throw new Error(msg);
     }
   } else {
     // 请求初始化时出错或者没有响应返回的异常
@@ -21,19 +38,26 @@ export const getRemoteList = async () => {
     method: 'get',
   })
     .then(response => {
-      return response.data;
+      return response;
     })
     .catch(err => {
       return false;
     });
 };
 
-export const editRecord = async ({ id, values }) => {
+export const editRecord = async ({
+  id,
+  values,
+}: {
+  id: number;
+  values: FormValues;
+}) => {
   return extendRequest(`/api/users/${id}`, {
     method: 'put',
     data: values,
   })
     .then(res => {
+      console.log(res);
       return true;
     })
     .catch(err => {
@@ -41,7 +65,7 @@ export const editRecord = async ({ id, values }) => {
     });
 };
 
-export const deleteRecord = async id => {
+export const deleteRecord = async (id: number) => {
   return extendRequest(`/api/users/${id}`, {
     method: 'delete',
   })
@@ -53,15 +77,17 @@ export const deleteRecord = async id => {
     });
 };
 
-export const addRecord = async values => {
+export const addRecord = async (values: FormValues) => {
   return extendRequest(`/api/users`, {
     method: 'post',
     data: values,
   })
-    .then(() => {
+    .then(res => {
+      console.log('addRes', res);
       return true;
     })
-    .catch(() => {
+    .catch(err => {
+      console.log('addErr', err);
       return false;
     });
 };

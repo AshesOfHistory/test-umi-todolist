@@ -1,9 +1,26 @@
-import React, { useEffect } from 'react';
-import { Modal, Form, Input } from 'antd';
+import React, { useEffect, FC } from 'react';
+import { Modal, Form, Input, message } from 'antd';
+import { SingleUserState, FormValues } from '../data';
 
-const UserModalIndex = props => {
+interface UserStateProps {
+  visible: boolean;
+  record: SingleUserState | undefined;
+  handleClose: () => void;
+  onFinish: (values: FormValues) => void;
+}
+
+interface ValidateErrorEntity<Values = any> {
+  values: Values;
+  errorFields: {
+    name: (string | number)[];
+    errors: string[];
+  }[];
+  outOfDate: boolean;
+}
+
+const UserModalIndex: FC<UserStateProps> = props => {
   const [form] = Form.useForm();
-  const { visible, record, handleCancel, handleOk, onFinish } = props;
+  const { visible, record, handleClose, onFinish } = props;
   useEffect(() => {
     if (record) {
       form.setFieldsValue(record);
@@ -15,8 +32,9 @@ const UserModalIndex = props => {
   const onOk = () => {
     form.submit();
   };
-  const onFinishFailed = err => {
-    console.log(err);
+  const onFinishFailed = (errInfo: ValidateErrorEntity) => {
+    console.log(errInfo);
+    message.error(errInfo.errorFields[0].errors[0]);
   };
 
   return (
@@ -24,7 +42,7 @@ const UserModalIndex = props => {
       title="Basic Modal"
       visible={visible}
       onOk={onOk}
-      onCancel={handleCancel}
+      onCancel={handleClose}
       forceRender
     >
       {/*initialValues={record} 能赋值，但是无法动态改变参数*/}
@@ -34,7 +52,11 @@ const UserModalIndex = props => {
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
       >
-        <Form.Item label="Name" name="name">
+        <Form.Item
+          label="Name"
+          name="name"
+          rules={[{ required: true, message: '请输入名称！' }]}
+        >
           <Input />
         </Form.Item>
 

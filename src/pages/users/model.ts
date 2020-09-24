@@ -6,17 +6,24 @@ import {
   addRecord,
 } from '@/pages/users/service';
 import { message } from 'antd';
+import { SingleUserState, Meta } from './data';
+
+export interface UserState {
+  data: SingleUserState[];
+  meta: Meta;
+}
 
 interface UserModelType {
   namespace: 'users';
-  state: {};
+  state: UserState;
   reducers: {
-    getList: Reducer;
+    getList: Reducer<UserState>;
   };
   effects: {
     getRemote: Effect;
     edit: Effect;
     delete: Effect;
+    add: Effect;
   };
   subscriptions: {
     setup: Subscription;
@@ -25,7 +32,7 @@ interface UserModelType {
 
 const UserModel: UserModelType = {
   namespace: 'users',
-  state: {},
+  state: { data: [], meta: { total: 0, per_page: 10, page: 1 } },
   reducers: {
     getList(state, { payload }) {
       // 接收上一次的数据，返回新数据
@@ -50,8 +57,6 @@ const UserModel: UserModelType = {
         yield put({
           type: 'getRemote',
         });
-      } else {
-        message.error('编辑失败');
       }
     },
     *delete({ payload }, { put, call }) {
@@ -61,19 +66,16 @@ const UserModel: UserModelType = {
         yield put({
           type: 'getRemote',
         });
-      } else {
-        message.error('删除失败');
       }
     },
     *add({ payload }, { put, call }) {
       const data = yield call(addRecord, payload.values);
+      console.log(data);
       if (data) {
         message.success('新增成功');
         yield put({
           type: 'getRemote',
         });
-      } else {
-        message.error('新增失败');
       }
     },
   },
