@@ -7,6 +7,7 @@ interface UserStateProps {
   record: SingleUserState | undefined;
   handleClose: () => void;
   onFinish: (values: FormValues) => void;
+  confirmLoading: boolean;
 }
 
 interface ValidateErrorEntity<Values = any> {
@@ -20,7 +21,7 @@ interface ValidateErrorEntity<Values = any> {
 
 const UserModalIndex: FC<UserStateProps> = props => {
   const [form] = Form.useForm();
-  const { visible, record, handleClose, onFinish } = props;
+  const { visible, record, handleClose, onFinish, confirmLoading } = props;
   useEffect(() => {
     if (record) {
       form.setFieldsValue(record);
@@ -44,6 +45,7 @@ const UserModalIndex: FC<UserStateProps> = props => {
       onOk={onOk}
       onCancel={handleClose}
       forceRender
+      confirmLoading={confirmLoading}
     >
       {/*initialValues={record} 能赋值，但是无法动态改变参数*/}
       <Form

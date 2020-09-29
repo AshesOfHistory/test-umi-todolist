@@ -30,6 +30,7 @@ const UserListPage: FC<UserPageProps> = ({
   // 接受到返回到users值
   const [modalVisible, setModalVisible] = useState(false);
   const [record, setRecord] = useState<SingleUserState | undefined>(undefined);
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const handleEdit = (record: SingleUserState) => {
     setRecord(record);
     setModalVisible(true);
@@ -63,6 +64,7 @@ const UserListPage: FC<UserPageProps> = ({
     setModalVisible(false);
   };
   const onFinish = async (values: FormValues) => {
+    setConfirmLoading(true);
     const id = record ? record.id : 0;
     let serviceFn;
     if (id) {
@@ -82,7 +84,9 @@ const UserListPage: FC<UserPageProps> = ({
           per_page: users.meta.per_page,
         },
       });
+      setConfirmLoading(false);
     } else {
+      setConfirmLoading(false);
       message.error(id ? '编辑失败！' : '新增失败！');
     }
   };
@@ -175,6 +179,7 @@ const UserListPage: FC<UserPageProps> = ({
         handleClose={closeModal}
         onFinish={onFinish}
         record={record}
+        confirmLoading={confirmLoading}
       ></UserModal>
     </div>
   );
