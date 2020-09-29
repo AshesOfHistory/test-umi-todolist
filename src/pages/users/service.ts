@@ -33,8 +33,14 @@ const errorHandler = function(error: any) {
 // 作为统一错误处理
 const extendRequest = extend({ errorHandler });
 
-export const getRemoteList = async () => {
-  return extendRequest('/api/users', {
+export const getRemoteList = async ({
+  page,
+  per_page,
+}: {
+  page: number;
+  per_page: number;
+}) => {
+  return extendRequest(`/api/users?page=${page}&per_page=${per_page}`, {
     method: 'get',
   })
     .then(response => {

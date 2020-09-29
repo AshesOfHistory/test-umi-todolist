@@ -4,8 +4,8 @@ import '@@/core/devScripts';
 import { plugin } from './core/plugin';
 import './core/pluginRegister';
 import { createHistory } from './core/history';
-import { ApplyPluginsType } from 'G:/_DemoProject/test-umi-todolist/node_modules/@umijs/runtime';
-import { renderClient } from 'G:/_DemoProject/test-umi-todolist/node_modules/@umijs/renderer-react/dist/index.js';
+import { ApplyPluginsType } from '/Users/a1/Documents/test_projects/test-umi/test-umi-todolist/node_modules/@umijs/runtime';
+import { renderClient } from '/Users/a1/Documents/test_projects/test-umi/test-umi-todolist/node_modules/@umijs/renderer-react/dist/index.js';
 import { getRoutes } from './core/routes';
 
 

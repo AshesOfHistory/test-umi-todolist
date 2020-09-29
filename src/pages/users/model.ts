@@ -40,9 +40,9 @@ const UserModel: UserModelType = {
     },
   },
   effects: {
-    *getRemote(action, { put, call }) {
+    *getRemote({ payload: { page, per_page } }, { put, call }) {
       // 无返回值 返回到页面的数据只能通过reducer来传递
-      const data = yield call(getRemoteList);
+      const data = yield call(getRemoteList, { page, per_page });
       if (data) {
         yield put({
           type: 'getList',
@@ -50,31 +50,45 @@ const UserModel: UserModelType = {
         });
       }
     },
-    *edit({ payload }, { put, call }) {
+    *edit({ payload }, { put, call, select }) {
       const data = yield call(editRecord, payload);
+      const { page, per_page } = yield select(state => state.users.meta);
       if (data) {
         message.success('编辑成功');
         yield put({
           type: 'getRemote',
+          payload: {
+            page,
+            per_page,
+          },
         });
       }
     },
-    *delete({ payload }, { put, call }) {
+    *delete({ payload }, { put, call, select }) {
       const data = yield call(deleteRecord, payload);
+      const { page, per_page } = yield select(state => state.users.meta);
       if (data) {
         message.success('删除成功');
         yield put({
           type: 'getRemote',
+          payload: {
+            page,
+            per_page,
+          },
         });
       }
     },
-    *add({ payload }, { put, call }) {
+    *add({ payload }, { put, call, select }) {
       const data = yield call(addRecord, payload.values);
-      console.log(data);
+      const { page, per_page } = yield select(state => state.users.meta);
       if (data) {
         message.success('新增成功');
         yield put({
           type: 'getRemote',
+          payload: {
+            page,
+            per_page,
+          },
         });
       }
     },
@@ -85,6 +99,10 @@ const UserModel: UserModelType = {
         if (pathname === '/users') {
           dispatch({
             type: 'getRemote',
+            payload: {
+              page: 1,
+              per_page: 5,
+            },
           });
         }
       });

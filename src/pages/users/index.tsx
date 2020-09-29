@@ -1,6 +1,12 @@
-import React, { useState, FC } from 'react';
-import { Table, Popconfirm, Button } from 'antd';
+import React, { useState, FC, useRef } from 'react';
+import { Table, Popconfirm, Button, Pagination } from 'antd';
+import ProTable, {
+  ProColumns,
+  TableDropdown,
+  ActionType,
+} from '@ant-design/pro-table';
 import UserModal from './components/UserModal';
+import { getRemoteList } from './service';
 import { connect, Dispatch, Loading, UserState } from 'umi';
 import { SingleUserState, FormValues } from './data.d';
 
@@ -8,6 +14,12 @@ interface UserPageProps {
   users: UserState;
   dispatch: Dispatch;
   userListLoading: boolean;
+}
+
+interface ActionType {
+  reload: () => void;
+  fetchMore: () => void;
+  reset: () => void;
 }
 
 const UserListPage: FC<UserPageProps> = ({
@@ -21,6 +33,31 @@ const UserListPage: FC<UserPageProps> = ({
   const handleEdit = (record: SingleUserState) => {
     setRecord(record);
     setModalVisible(true);
+  };
+  const ref = useRef<ActionType>();
+  const onReload = () => {
+    console.log('onReload', ref);
+    ref.current.reload();
+  };
+  const handlePagination = (page: number, pageSize: number) => {
+    console.log(page, pageSize);
+    dispatch({
+      type: 'users/getRemote',
+      payload: {
+        page,
+        per_page: pageSize,
+      },
+    });
+  };
+  const handlePageSize = (current: number, size: number) => {
+    console.log(current, size);
+    dispatch({
+      type: 'users/getRemote',
+      payload: {
+        page: current,
+        per_page: size,
+      },
+    });
   };
   const closeModal = () => {
     setModalVisible(false);
@@ -56,7 +93,6 @@ const UserListPage: FC<UserPageProps> = ({
     setRecord(undefined);
     setModalVisible(true);
   };
-
   const columns = [
     {
       title: 'ID',
@@ -110,11 +146,26 @@ const UserListPage: FC<UserPageProps> = ({
       <Button type="primary" onClick={onAdd}>
         添加
       </Button>
-      <Table
+      <Button onClick={onReload}>刷新</Button>
+      <ProTable
+        actionRef={ref}
         columns={columns}
         dataSource={users.data.length ? users.data : []}
         rowKey="id"
         loading={userListLoading}
+        search={false}
+        pagination={false}
+      />
+      <Pagination
+        className="list-page"
+        total={users.meta.total}
+        current={users.meta.page}
+        pageSize={users.meta.per_page}
+        onChange={handlePagination}
+        onShowSizeChange={handlePageSize}
+        showSizeChanger
+        showQuickJumper
+        showTotal={total => `Total ${total} items`}
       />
       <UserModal
         visible={modalVisible}

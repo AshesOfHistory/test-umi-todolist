@@ -1,13 +1,13 @@
 // @ts-nocheck
 import React from 'react';
-import initialState from 'G:/_DemoProject/test-umi-todolist/src/.umi/plugin-initial-state/models/initialState';
+import initialState from '/Users/a1/Documents/test_projects/test-umi/test-umi-todolist/src/.umi/plugin-initial-state/models/initialState';
 
 // @ts-ignore
-import Dispatcher from 'G:/_DemoProject/test-umi-todolist/node_modules/@umijs/plugin-model/lib/helpers/dispatcher';
+import Dispatcher from '/Users/a1/Documents/test_projects/test-umi/test-umi-todolist/node_modules/@umijs/plugin-model/lib/helpers/dispatcher';
 // @ts-ignore
-import Executor from 'G:/_DemoProject/test-umi-todolist/node_modules/@umijs/plugin-model/lib/helpers/executor';
+import Executor from '/Users/a1/Documents/test_projects/test-umi/test-umi-todolist/node_modules/@umijs/plugin-model/lib/helpers/executor';
 // @ts-ignore
-import { UmiContext } from 'G:/_DemoProject/test-umi-todolist/node_modules/@umijs/plugin-model/lib/helpers/constant';
+import { UmiContext } from '/Users/a1/Documents/test_projects/test-umi/test-umi-todolist/node_modules/@umijs/plugin-model/lib/helpers/constant';
 
 export const models = { '@@initialState': initialState,  };
 
