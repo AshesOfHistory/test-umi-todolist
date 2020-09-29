@@ -63,7 +63,6 @@ export const editRecord = async ({
     data: values,
   })
     .then(res => {
-      console.log(res);
       return true;
     })
     .catch(err => {
@@ -89,11 +88,9 @@ export const addRecord = async (values: FormValues) => {
     data: values,
   })
     .then(res => {
-      console.log('addRes', res);
       return true;
     })
     .catch(err => {
-      console.log('addErr', err);
       return false;
     });
 };

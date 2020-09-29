@@ -1,12 +1,12 @@
 import React, { useState, FC, useRef } from 'react';
-import { Table, Popconfirm, Button, Pagination } from 'antd';
+import { Table, Popconfirm, Button, Pagination, message } from 'antd';
 import ProTable, {
   ProColumns,
   TableDropdown,
   ActionType,
 } from '@ant-design/pro-table';
 import UserModal from './components/UserModal';
-import { getRemoteList } from './service';
+import { addRecord, editRecord } from './service';
 import { connect, Dispatch, Loading, UserState } from 'umi';
 import { SingleUserState, FormValues } from './data.d';
 
@@ -62,26 +62,29 @@ const UserListPage: FC<UserPageProps> = ({
   const closeModal = () => {
     setModalVisible(false);
   };
-  const onFinish = (values: FormValues) => {
-    const id = record?.id;
+  const onFinish = async (values: FormValues) => {
+    const id = record ? record.id : 0;
+    let serviceFn;
     if (id) {
+      serviceFn = editRecord;
+    } else {
+      serviceFn = addRecord;
+    }
+    const result = await serviceFn({ id, values });
+    console.log(result);
+    if (result) {
+      message.success(id ? '编辑成功！' : '新增成功！');
+      setModalVisible(false);
       dispatch({
-        type: 'users/edit', // dispatch的时候需要加上命名空间
+        type: 'users/getRemote',
         payload: {
-          id,
-          values,
+          page: users.meta.page,
+          per_page: users.meta.per_page,
         },
       });
     } else {
-      dispatch({
-        type: 'users/add', // dispatch的时候需要加上命名空间
-        payload: {
-          values,
-        },
-      });
+      message.error(id ? '编辑失败！' : '新增失败！');
     }
-
-    setModalVisible(false);
   };
   const onConfirmDelete = (id: number) => {
     dispatch({
