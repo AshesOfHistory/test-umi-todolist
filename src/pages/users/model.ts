@@ -1,10 +1,5 @@
 import { Reducer, Effect, Subscription } from 'umi';
-import {
-  getRemoteList,
-  editRecord,
-  deleteRecord,
-  addRecord,
-} from '@/pages/users/service';
+import { getRemoteList, deleteRecord } from '@/pages/users/service';
 import { message } from 'antd';
 import { SingleUserState, Meta } from './data';
 
@@ -21,9 +16,7 @@ interface UserModelType {
   };
   effects: {
     getRemote: Effect;
-    edit: Effect;
     delete: Effect;
-    add: Effect;
   };
   subscriptions: {
     setup: Subscription;
@@ -50,39 +43,11 @@ const UserModel: UserModelType = {
         });
       }
     },
-    *edit({ payload }, { put, call, select }) {
-      const data = yield call(editRecord, payload);
-      const { page, per_page } = yield select(state => state.users.meta);
-      if (data) {
-        message.success('编辑成功');
-        yield put({
-          type: 'getRemote',
-          payload: {
-            page,
-            per_page,
-          },
-        });
-      }
-    },
     *delete({ payload }, { put, call, select }) {
       const data = yield call(deleteRecord, payload);
-      const { page, per_page } = yield select(state => state.users.meta);
+      const { page, per_page } = yield select((state: any) => state.users.meta);
       if (data) {
         message.success('删除成功');
-        yield put({
-          type: 'getRemote',
-          payload: {
-            page,
-            per_page,
-          },
-        });
-      }
-    },
-    *add({ payload }, { put, call, select }) {
-      const data = yield call(addRecord, payload.values);
-      const { page, per_page } = yield select(state => state.users.meta);
-      if (data) {
-        message.success('新增成功');
         yield put({
           type: 'getRemote',
           payload: {

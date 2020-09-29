@@ -1,6 +1,7 @@
 import React, { useEffect, FC } from 'react';
-import { Modal, Form, Input, message } from 'antd';
+import { Modal, Form, Input, message, DatePicker, Switch } from 'antd';
 import { SingleUserState, FormValues } from '../data';
+import moment from 'moment';
 
 interface UserStateProps {
   visible: boolean;
@@ -19,12 +20,21 @@ interface ValidateErrorEntity<Values = any> {
   outOfDate: boolean;
 }
 
+const layout = {
+  labelCol: { span: 4 },
+  wrapperCol: { span: 18 },
+};
+
 const UserModalIndex: FC<UserStateProps> = props => {
   const [form] = Form.useForm();
   const { visible, record, handleClose, onFinish, confirmLoading } = props;
   useEffect(() => {
     if (record) {
-      form.setFieldsValue(record);
+      form.setFieldsValue({
+        ...record,
+        create_time: moment(record.create_time),
+        status: record.status === 1,
+      });
     } else {
       form.resetFields();
     }
@@ -40,7 +50,7 @@ const UserModalIndex: FC<UserStateProps> = props => {
 
   return (
     <Modal
-      title="Basic Modal"
+      title={record ? '编辑 ID:' + record.id : '新增'}
       visible={visible}
       onOk={onOk}
       onCancel={handleClose}
@@ -49,10 +59,14 @@ const UserModalIndex: FC<UserStateProps> = props => {
     >
       {/*initialValues={record} 能赋值，但是无法动态改变参数*/}
       <Form
+        {...layout}
         name="basic"
         form={form}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
+        initialValues={{
+          status: true,
+        }}
       >
         <Form.Item
           label="Name"
@@ -66,10 +80,10 @@ const UserModalIndex: FC<UserStateProps> = props => {
           <Input />
         </Form.Item>
         <Form.Item label="Create Time" name="create_time">
-          <Input />
+          <DatePicker showTime />
         </Form.Item>
-        <Form.Item label="ID" name="id">
-          <Input />
+        <Form.Item label="status" name="status" valuePropName="checked">
+          <Switch />
         </Form.Item>
       </Form>
     </Modal>

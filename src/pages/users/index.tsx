@@ -9,17 +9,12 @@ import UserModal from './components/UserModal';
 import { addRecord, editRecord } from './service';
 import { connect, Dispatch, Loading, UserState } from 'umi';
 import { SingleUserState, FormValues } from './data.d';
+import { OptionsType } from '@ant-design/pro-table/lib/component/ToolBar';
 
 interface UserPageProps {
   users: UserState;
   dispatch: Dispatch;
   userListLoading: boolean;
-}
-
-interface ActionType {
-  reload: () => void;
-  fetchMore: () => void;
-  reset: () => void;
 }
 
 const UserListPage: FC<UserPageProps> = ({
@@ -37,16 +32,21 @@ const UserListPage: FC<UserPageProps> = ({
   };
   const ref = useRef<ActionType>();
   const onReload = () => {
-    console.log('onReload', ref);
-    ref.current.reload();
+    dispatch({
+      type: 'users/getRemote',
+      payload: {
+        page: users.meta.page,
+        per_page: users.meta.per_page,
+      },
+    });
   };
-  const handlePagination = (page: number, pageSize: number) => {
+  const handlePagination = (page: number, pageSize?: number) => {
     console.log(page, pageSize);
     dispatch({
       type: 'users/getRemote',
       payload: {
         page,
-        per_page: pageSize,
+        per_page: pageSize ? pageSize : users.meta.per_page,
       },
     });
   };
@@ -73,17 +73,10 @@ const UserListPage: FC<UserPageProps> = ({
       serviceFn = addRecord;
     }
     const result = await serviceFn({ id, values });
-    console.log(result);
     if (result) {
       message.success(id ? '编辑成功！' : '新增成功！');
       setModalVisible(false);
-      dispatch({
-        type: 'users/getRemote',
-        payload: {
-          page: users.meta.page,
-          per_page: users.meta.per_page,
-        },
-      });
+      onReload();
       setConfirmLoading(false);
     } else {
       setConfirmLoading(false);
@@ -100,22 +93,24 @@ const UserListPage: FC<UserPageProps> = ({
     setRecord(undefined);
     setModalVisible(true);
   };
-  const columns = [
+  const columns: ProColumns<SingleUserState>[] = [
     {
       title: 'ID',
       dataIndex: 'id',
+      valueType: 'digit',
       key: 'id',
     },
     {
       title: 'Name',
       dataIndex: 'name',
+      valueType: 'text',
       key: 'name',
-      render: (text: string) => <a>{text}</a>,
+      render: (text: any) => <a>{text}</a>,
     },
     {
       title: 'Action',
       key: 'action',
-      render: (text: string, record: SingleUserState) => (
+      render: (text: any, record: SingleUserState) => (
         <div>
           <Button
             style={{ marginRight: '10px' }}
@@ -144,16 +139,13 @@ const UserListPage: FC<UserPageProps> = ({
     {
       title: 'create_time',
       dataIndex: 'create_time',
+      valueType: 'dateTime',
       key: 'create_time',
     },
   ];
 
   return (
     <div className="list-table">
-      <Button type="primary" onClick={onAdd}>
-        添加
-      </Button>
-      <Button onClick={onReload}>刷新</Button>
       <ProTable
         actionRef={ref}
         columns={columns}
@@ -162,6 +154,21 @@ const UserListPage: FC<UserPageProps> = ({
         loading={userListLoading}
         search={false}
         pagination={false}
+        options={{
+          density: true,
+          fullScreen: true,
+          reload: () => {
+            onReload();
+          },
+          setting: true,
+        }}
+        headerTitle="用户列表"
+        toolBarRender={() => [
+          <Button type="primary" onClick={onAdd}>
+            添加
+          </Button>,
+          <Button onClick={onReload}>刷新</Button>,
+        ]}
       />
       <Pagination
         className="list-page"
